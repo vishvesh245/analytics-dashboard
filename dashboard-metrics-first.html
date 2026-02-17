@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Dashboard - Noon Now UAE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1419;
+            color: white;
+            padding: 0;
+        }
+        
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f1419, #1a2a3a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .login-screen.hidden {
+            display: none;
+        }
+        
+        .login-box {
+            background: #1a1f2e;
+            padding: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #333;
+        }
+        
+        .login-box h1 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .login-box p {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #252d3d;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #00d4ff, #6366f1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            margin: 10px 0;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .demo-hint {
+            color: #666;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        /* MAIN APP */
+        .app-screen {
+            display: none;
+            padding: 20px;
+        }
+        
+        .app-screen.active {
+            display: block;
+        }
+        
+        .header {
+            background: #1a1f2e;
+            padding: 20px;
+            margin: -20px -20px 30px -20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #00d4ff;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .search-section {
+            background: #1a1f2e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+        
+        .search-section h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            background: #252d3d;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .search-box button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00d4ff, #6366f1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 120px;
+        }
+        
+        .search-box button:hover {
+            opacity: 0.9;
+        }
+        
+        .metrics-title {
+            color: #00d4ff;
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .metric-card {
+            background: #1a1f2e;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            border-left: 4px solid #00d4ff;
+        }
+        
+        .metric-card:hover {
+            border-color: #00d4ff;
+            background: #222533;
+        }
+        
+        .metric-label {
+            color: #aaa;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        
+        .metric-change {
+            font-size: 13px;
+            color: #51cf66;
+        }
+        
+        .metric-change.negative {
+            color: #ff6b6b;
+        }
+        
+        .results-section {
+            background: #1a1f2e;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results-section.show {
+            display: block;
+        }
+        
+        .results-section h3 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        
+        .result-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .metric-value {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h1>📊 Analytics</h1>
+            <p>Noon Now UAE - Business Intelligence</p>
+            
+            <div id="loginError" class="error"></div>
+            
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button class="login-btn" onclick="login()">Sign In</button>
+            
+            <div class="demo-hint">
+                Demo: demo@noon.com / demo123
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAIN APP -->
+    <div id="appScreen" class="app-screen">
+        <div class="header">
+            <h1>📊 Dashboard</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="container">
+            <!-- SEARCH SECTION -->
+            <div class="search-section">
+                <h3>🔍 Ask a Question</h3>
+                <div class="search-box">
+                    <input type="text" id="queryInput" placeholder="e.g., Show me orders for yesterday, What is the conversion rate?" onkeypress="if(event.key === 'Enter') search()">
+                    <button onclick="search()">Search</button>
+                </div>
+            </div>
+            
+            <!-- MAIN METRICS -->
+            <div class="metrics-title">📈 Key Metrics</div>
+            
+            <div class="metrics-grid">
+                <!-- Orders -->
+                <div class="metric-card">
+                    <div class="metric-label">Total Orders</div>
+                    <div class="metric-value">154,546</div>
+                    <div class="metric-change">+2.4% vs yesterday</div>
+                </div>
+                
+                <!-- Sessions -->
+                <div class="metric-card">
+                    <div class="metric-label">Sessions</div>
+                    <div class="metric-value">634,822</div>
+                    <div class="metric-change negative">-2.2% vs yesterday</div>
+                </div>
+                
+                <!-- AOV -->
+                <div class="metric-card">
+                    <div class="metric-label">Average Order Value</div>
+                    <div class="metric-value">₹546</div>
+                    <div class="metric-change">+1.1% vs yesterday</div>
+                </div>
+                
+                <!-- CR -->
+                <div class="metric-card">
+                    <div class="metric-label">Conversion Rate</div>
+                    <div class="metric-value">24.3%</div>
+                    <div class="metric-change negative">-0.5% vs yesterday</div>
+                </div>
+                
+                <!-- Customers -->
+                <div class="metric-card">
+                    <div class="metric-label">Total Customers</div>
+                    <div class="metric-value">175,047</div>
+                    <div class="metric-change">+2.3% vs yesterday</div>
+                </div>
+                
+                <!-- GMV -->
+                <div class="metric-card">
+                    <div class="metric-label">Gross Merchandise Value</div>
+                    <div class="metric-value">₹8.5 Cr</div>
+                    <div class="metric-change">+3.2% vs yesterday</div>
+                </div>
+                
+                <!-- New Customers -->
+                <div class="metric-card">
+                    <div class="metric-label">New Customers</div>
+                    <div class="metric-value">45,226</div>
+                    <div class="metric-change">+5.2% vs yesterday</div>
+                </div>
+                
+                <!-- Repeat Customers -->
+                <div class="metric-card">
+                    <div class="metric-label">Repeat Customers</div>
+                    <div class="metric-value">129,821</div>
+                    <div class="metric-change">+1.8% vs yesterday</div>
+                </div>
+            </div>
+            
+            <!-- SEARCH RESULTS -->
+            <div id="resultsSection" class="results-section">
+                <h3>Search Results</h3>
+                <div id="resultsContent" class="result-metrics"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const USERS = {
+            'demo@noon.com': 'demo123',
+            'ceo@noon.com': 'ceo123',
+            'admin@noon.com': 'admin123'
+        };
+        
+        const METRICS = {
+            'orders': { label: 'Total Orders', value: '154,546', change: '+2.4%' },
+            'sessions': { label: 'Sessions', value: '634,822', change: '-2.2%' },
+            'aov': { label: 'Average Order Value', value: '₹546', change: '+1.1%' },
+            'cr': { label: 'Conversion Rate', value: '24.3%', change: '-0.5%' },
+            'conversion': { label: 'Conversion Rate', value: '24.3%', change: '-0.5%' },
+            'customers': { label: 'Total Customers', value: '175,047', change: '+2.3%' },
+            'gmv': { label: 'GMV', value: '₹8.5 Cr', change: '+3.2%' },
+            'new': { label: 'New Customers', value: '45,226', change: '+5.2%' },
+            'repeat': { label: 'Repeat Customers', value: '129,821', change: '+1.8%' }
+        };
+        
+        let loggedIn = false;
+        
+        // Auto-fill demo credentials
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email').value = 'demo@noon.com';
+            document.getElementById('password').value = 'demo123';
+        });
+        
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (USERS[email] === password) {
+                loggedIn = true;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('appScreen').classList.add('active');
+                errorDiv.classList.remove('show');
+            } else {
+                errorDiv.textContent = 'Invalid email or password!';
+                errorDiv.classList.add('show');
+            }
+        }
+        
+        function logout() {
+            loggedIn = false;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appScreen').classList.remove('active');
+            document.getElementById('queryInput').value = '';
+            document.getElementById('resultsSection').classList.remove('show');
+            document.getElementById('email').value = 'demo@noon.com';
+            document.getElementById('password').value = 'demo123';
+        }
+        
+        function search() {
+            if (!loggedIn) {
+                alert('Please login first');
+                return;
+            }
+            
+            const query = document.getElementById('queryInput').value.toLowerCase();
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            if (!query) {
+                resultsSection.classList.remove('show');
+                return;
+            }
+            
+            let html = '';
+            let found = false;
+            
+            // Search through metrics
+            for (const [key, metric] of Object.entries(METRICS)) {
+                if (query.includes(key)) {
+                    const isPositive = metric.change.includes('-') ? 'negative' : '';
+                    html += `
+                        <div class="metric-card">
+                            <div class="metric-label">${metric.label}</div>
+                            <div class="metric-value">${metric.value}</div>
+                            <div class="metric-change ${isPositive}">${metric.change} vs yesterday</div>
+                        </div>
+                    `;
+                    found = true;
+                }
+            }
+            
+            if (found) {
+                resultsContent.innerHTML = html;
+                resultsSection.classList.add('show');
+            } else {
+                resultsContent.innerHTML = '<p style="color: #ff6b6b;">No results found. Try: orders, sessions, aov, cr, customers, gmv, new, repeat</p>';
+                resultsSection.classList.add('show');
+            }
+        }
+        
+        // Allow Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!loggedIn) {
+                    login();
+                } else {
+                    search();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
