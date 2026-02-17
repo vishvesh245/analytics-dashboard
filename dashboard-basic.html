@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .login-box {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            display: block;
+        }
+        
+        .app-box {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #0099ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #0077cc;
+        }
+        
+        h1 {
+            margin-top: 0;
+            color: #0099ff;
+        }
+        
+        h2 {
+            color: #0099ff;
+            margin-top: 30px;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            margin: 10px 0;
+        }
+        
+        .success {
+            color: #51cf66;
+            margin: 10px 0;
+        }
+        
+        .metric {
+            background: #333;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #0099ff;
+        }
+        
+        .metric-label {
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0099ff;
+        }
+        
+        .logout-btn {
+            background: #ff6b6b;
+            margin-top: 30px;
+        }
+        
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .search-box input {
+            flex: 1;
+            margin: 0;
+        }
+        
+        .search-box button {
+            width: 100px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LOGIN SCREEN -->
+        <div id="loginBox" class="login-box">
+            <h1>📊 Analytics Dashboard</h1>
+            <p>Noon Now UAE</p>
+            
+            <div id="loginError" class="error" style="display:none;"></div>
+            
+            <input type="email" id="email" placeholder="Email" value="demo@noon.com">
+            <input type="password" id="password" placeholder="Password" value="demo123">
+            <button onclick="login()">Login</button>
+            
+            <p style="color: #999; margin-top: 20px; font-size: 12px;">
+                Demo: demo@noon.com / demo123
+            </p>
+        </div>
+        
+        <!-- APP SCREEN -->
+        <div id="appBox" class="app-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 style="margin: 0;">📊 Dashboard</h1>
+                <button class="logout-btn" onclick="logout()" style="width: 100px; margin: 0;">Logout</button>
+            </div>
+            
+            <h2>Search Data</h2>
+            
+            <div class="search-box">
+                <input type="text" id="queryInput" placeholder="Ask something... e.g., orders, sales, metrics">
+                <button onclick="search()">Search</button>
+            </div>
+            
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Users
+        const USERS = {
+            'demo@noon.com': 'demo123',
+            'ceo@noon.com': 'ceo123',
+            'admin@noon.com': 'admin123'
+        };
+        
+        // Sample data
+        const DATA = {
+            'orders': '154,546',
+            'sessions': '634,822',
+            'aov': '₹546',
+            'cr': '24.3%',
+            'customers': '175,047',
+            'gmv': '₹85,00,00,000',
+            'new customers': '45,226',
+            'repeat': '129,821',
+            'growth': 'Orders: +2.4%, Sessions: -2.2%, AOV: +1.1%'
+        };
+        
+        let loggedIn = false;
+        
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (USERS[email] === password) {
+                loggedIn = true;
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('appBox').style.display = 'block';
+                errorDiv.style.display = 'none';
+            } else {
+                errorDiv.textContent = 'Wrong email or password!';
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        function logout() {
+            loggedIn = false;
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('appBox').style.display = 'none';
+            document.getElementById('queryInput').value = '';
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        function search() {
+            if (!loggedIn) {
+                alert('Please login first');
+                return;
+            }
+            
+            const query = document.getElementById('queryInput').value.toLowerCase();
+            const resultsDiv = document.getElementById('results');
+            
+            if (!query) {
+                resultsDiv.innerHTML = '<p class="error">Please ask something!</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            // Search through data
+            for (const [key, value] of Object.entries(DATA)) {
+                if (query.includes(key)) {
+                    html += `
+                        <div class="metric">
+                            <div class="metric-label">${key}</div>
+                            <div class="metric-value">${value}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (html === '') {
+                html = '<p class="error">No results found. Try: orders, sessions, aov, cr, customers, gmv, growth</p>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Allow Enter key to search
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && loggedIn) {
+                search();
+            }
+        });
+    </script>
+</body>
+</html>
