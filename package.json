@@ -1,0 +1,24 @@
+{
+  "name": "analytics-dashboard-api",
+  "version": "1.0.0",
+  "description": "Noon Now Analytics Dashboard API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "analytics",
+    "dashboard",
+    "google-sheets"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "google-spreadsheet": "^4.1.1",
+    "jsonwebtoken": "^9.1.0"
+  }
+}
