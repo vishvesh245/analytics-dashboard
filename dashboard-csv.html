@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Dashboard - Noon Now UAE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1419;
+            color: white;
+            padding: 0;
+        }
+        
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f1419, #1a2a3a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .login-screen.hidden {
+            display: none;
+        }
+        
+        .login-box {
+            background: #1a1f2e;
+            padding: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #333;
+        }
+        
+        .login-box h1 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .login-box p {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #252d3d;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #00d4ff, #6366f1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            margin: 10px 0;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .demo-hint {
+            color: #666;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        /* MAIN APP */
+        .app-screen {
+            display: none;
+            padding: 20px;
+        }
+        
+        .app-screen.active {
+            display: block;
+        }
+        
+        .header {
+            background: #1a1f2e;
+            padding: 20px;
+            margin: -20px -20px 30px -20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #00d4ff;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .search-section {
+            background: #1a1f2e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+        
+        .search-section h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            background: #252d3d;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .search-box button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00d4ff, #6366f1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 120px;
+        }
+        
+        .search-box button:hover {
+            opacity: 0.9;
+        }
+        
+        .metrics-title {
+            color: #00d4ff;
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .date-info {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .metric-card {
+            background: #1a1f2e;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            border-left: 4px solid #00d4ff;
+        }
+        
+        .metric-card:hover {
+            border-color: #00d4ff;
+            background: #222533;
+        }
+        
+        .metric-label {
+            color: #aaa;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333;
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .metric-value {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h1>📊 Analytics</h1>
+            <p>Noon Now UAE - Business Intelligence</p>
+            
+            <div id="loginError" class="error"></div>
+            
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button class="login-btn" onclick="login()">Sign In</button>
+            
+            <div class="demo-hint">
+                Demo: demo@noon.com / demo123
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAIN APP -->
+    <div id="appScreen" class="app-screen">
+        <div class="header">
+            <h1>📊 Dashboard</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="container">
+            <!-- SEARCH SECTION -->
+            <div class="search-section">
+                <h3>🔍 Ask a Question</h3>
+                <div class="search-box">
+                    <input type="text" id="queryInput" placeholder="e.g., orders, sessions, aov" onkeypress="if(event.key === 'Enter') search()">
+                    <button onclick="search()">Search</button>
+                </div>
+            </div>
+            
+            <!-- LOADING INDICATOR -->
+            <div id="loadingIndicator" class="loading">
+                <div class="spinner"></div> Loading data from your Google Sheet...
+            </div>
+            
+            <!-- ERROR MESSAGE -->
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            
+            <!-- MAIN METRICS -->
+            <div id="metricsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const USERS = {
+            'demo@noon.com': 'demo123',
+            'ceo@noon.com': 'ceo123',
+            'admin@noon.com': 'admin123'
+        };
+        
+        // Direct CSV export URL from Google Sheets
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/1WFHuhA2M9rmHRfxVeUWuGWRvgcDC2W4jSyIgXRvLpVw/gviz/tq?tqx=out:csv&sheet=DoD Growth Trends';
+        
+        let loggedIn = false;
+        let sheetData = null;
+        
+        // Auto-fill demo credentials
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email').value = 'demo@noon.com';
+            document.getElementById('password').value = 'demo123';
+        });
+        
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (USERS[email] === password) {
+                loggedIn = true;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('appScreen').classList.add('active');
+                errorDiv.classList.remove('show');
+                loadData();
+            } else {
+                errorDiv.textContent = 'Invalid email or password!';
+                errorDiv.classList.add('show');
+            }
+        }
+        
+        function logout() {
+            loggedIn = false;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appScreen').classList.remove('active');
+            document.getElementById('queryInput').value = '';
+            document.getElementById('email').value = 'demo@noon.com';
+            document.getElementById('password').value = 'demo123';
+            sheetData = null;
+        }
+        
+        // LOAD DATA FROM CSV
+        async function loadData() {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            const errorDiv = document.getElementById('errorMessage');
+            const metricsDiv = document.getElementById('metricsContainer');
+            
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            metricsDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch(CSV_URL);
+                const csv = await response.text();
+                
+                // Parse CSV
+                const lines = csv.trim().split('\n');
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                
+                if (lines.length < 2) {
+                    throw new Error('No data found in sheet');
+                }
+                
+                // Get last row
+                const lastLine = lines[lines.length - 1];
+                const values = lastLine.split(',').map(v => v.trim().replace(/"/g, ''));
+                
+                // Build data object
+                sheetData = {};
+                headers.forEach((header, index) => {
+                    sheetData[header] = values[index];
+                });
+                
+                displayMetrics();
+                loadingDiv.style.display = 'none';
+            } catch (error) {
+                errorDiv.textContent = `Error loading data: ${error.message}`;
+                errorDiv.style.display = 'block';
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        function displayMetrics() {
+            const metricsDiv = document.getElementById('metricsContainer');
+            let html = '';
+            
+            const date = sheetData['Date'] || 'N/A';
+            html += `<div class="date-info">📅 Data from: ${date}</div>`;
+            html += '<div class="metrics-title">📈 Key Metrics</div>';
+            html += '<div class="metrics-grid">';
+            
+            // Define metrics to show
+            const metricsToShow = [
+                { key: 'Delivered orders', label: 'Total Orders' },
+                { key: 'Sessions', label: 'Sessions' },
+                { key: 'AOV', label: 'Average Order Value' },
+                { key: 'CR', label: 'Conversion Rate' },
+                { key: 'Customers', label: 'Total Customers' },
+                { key: 'GMV', label: 'Gross Merchandise Value' },
+                { key: 'New Customers', label: 'New Customers' },
+                { key: 'Repeat Customers', label: 'Repeat Customers' }
+            ];
+            
+            metricsToShow.forEach(metric => {
+                const value = sheetData[metric.key];
+                if (value !== undefined && value !== null && value !== '') {
+                    html += `
+                        <div class="metric-card">
+                            <div class="metric-label">${metric.label}</div>
+                            <div class="metric-value">${formatValue(metric.key, value)}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += '</div>';
+            metricsDiv.innerHTML = html;
+        }
+        
+        function formatValue(metric, value) {
+            const numValue = parseFloat(value);
+            if (isNaN(numValue)) return String(value);
+            
+            if (metric === 'CR') {
+                return numValue.toFixed(1) + '%';
+            }
+            if (metric === 'AOV') {
+                return '₹' + numValue.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+            }
+            if (metric === 'GMV') {
+                return '₹' + numValue.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+            }
+            return numValue.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        }
+        
+        function search() {
+            if (!loggedIn || !sheetData) {
+                alert('Please login first');
+                return;
+            }
+            
+            const query = document.getElementById('queryInput').value.toLowerCase();
+            if (!query) return;
+            
+            alert('Search results for: ' + query + '\n\nFeature coming soon!');
+        }
+        
+        // Allow Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!loggedIn) {
+                    login();
+                } else {
+                    search();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
